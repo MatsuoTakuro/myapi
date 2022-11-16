@@ -104,4 +104,13 @@ func TestUpdateNiceNum(t *testing.T) {
 			testdata.ArticleTestData[articleID].NiceNum,
 			got.NiceNum)
 	}
+
+	// Added to address an issue of the subtest1 in TestSelectArticleDetail cases failing when it is executed after TestUpdateNiceNum
+	// Using Tx.Rollback in t.Cleanup for each unit test dealing with db is preferable, I guess
+	t.Cleanup(func() {
+		const sqlStr = `
+			update articles set nice = ?
+			where article_id = ?`
+		testDB.Exec(sqlStr, testdata.ArticleTestData[articleID-1].NiceNum, articleID)
+	})
 }
