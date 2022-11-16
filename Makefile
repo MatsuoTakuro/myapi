@@ -12,3 +12,7 @@ db_init:
 
 db_in:
 	mysql -h 127.0.0.1 -u docker sampledb -p
+
+test: ## Execute tests
+  ## go: -race requires cgo; enable cgo by setting CGO_ENABLED=1
+	go test -race -shuffle=on ./...
