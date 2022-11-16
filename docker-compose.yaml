@@ -1,11 +1,26 @@
 version: '3.3'
 services:
-
+  app:
+    image: myapi
+    build:
+      args:
+        - target=dev
+    environment:
+      PORT: 8080
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${USERNAME}
+      DB_PASSWORD: ${USERPASS}
+      DB_NAME: ${DATABASE}
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
   mysql:
     image: mysql:5.7
     platform: linux/amd64 # this needs for m1 user!
     container_name: db-for-go
-    command: 
+    command:
         - --character-set-server=utf8mb4
         - --collation-server=utf8mb4_unicode_ci
         - --sql-mode=ONLY_FULL_GROUP_BY,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
@@ -16,7 +31,7 @@ services:
         MYSQL_USER: ${USERNAME}
         MYSQL_PASSWORD: ${USERPASS}
         TZ: 'Asia/Tokyo'
-    ports: 
+    ports:
         - "3306:3306"
     volumes:
         - db-volume:/var/lib/mysql

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/MatsuoTakuro/myapi-go-intermediate/apperrors"
 	"github.com/MatsuoTakuro/myapi-go-intermediate/controllers/services"
 	"github.com/MatsuoTakuro/myapi-go-intermediate/models"
 )
@@ -18,15 +19,23 @@ func NewCommentController(s services.CommentServicer) *CommentController {
 
 // POST /comment のハンドラ
 func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqComment models.Comment
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
+		return
 	}
 
 	comment, err := c.service.PostCommentService(reqComment)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
-	json.NewEncoder(w).Encode(comment)
+
+	if err = json.NewEncoder(w).Encode(comment); err != nil {
+		err = apperrors.ResBodyEncodeFailed.Wrap(err, "fail to encode response body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
 }

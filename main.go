@@ -12,10 +12,13 @@ import (
 )
 
 var (
+	appPort    = os.Getenv("PORT")
+	dbHost     = os.Getenv("DB_HOST")
+	dbPort     = os.Getenv("DB_PORT")
 	dbUser     = os.Getenv("DB_USER")
 	dbPassword = os.Getenv("DB_PASSWORD")
 	dbDatabase = os.Getenv("DB_NAME")
-	dbConn     = fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s?parseTime=true", dbUser, dbPassword, dbDatabase)
+	dbConn     = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbDatabase)
 )
 
 func main() {
@@ -27,6 +30,6 @@ func main() {
 
 	r := api.NewRouter(db)
 
-	log.Println("server start at port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Println("server start at port", appPort)
+	log.Fatal(http.ListenAndServe(":"+appPort, r))
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/MatsuoTakuro/myapi-go-intermediate/apperrors"
 	"github.com/MatsuoTakuro/myapi-go-intermediate/controllers/services"
 	"github.com/MatsuoTakuro/myapi-go-intermediate/models"
 	"github.com/gorilla/mux"
@@ -21,27 +22,36 @@ func NewArticleController(s services.ArticleServicer) *ArticleController {
 
 // GET /hello のハンドラ
 func (c *ArticleController) HelloHandler(w http.ResponseWriter, req *http.Request) {
-	io.WriteString(w, "Hello, world!\n")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	io.WriteString(w, `{"message": "Hello, world!"}`)
 }
 
 // POST /article のハンドラ
 func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
+		return
 	}
 
 	article, err := c.service.PostArticleService(reqArticle)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(article)
+	if err = json.NewEncoder(w).Encode(article); err != nil {
+		err = apperrors.ResBodyEncodeFailed.Wrap(err, "fail to encode response body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
 }
 
 // GET /article/list のハンドラ
 func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	queryMap := req.URL.Query()
 
 	// クエリパラメータpageを取得
@@ -50,7 +60,8 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 		var err error
 		page, err = strconv.Atoi(p[0])
 		if err != nil {
-			http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+			err = apperrors.BadParam.Wrap(err, "queryparam must be number")
+			apperrors.ErrorHandler(w, req, err)
 			return
 		}
 	} else {
@@ -59,42 +70,59 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 
 	articleList, err := c.service.GetArticleListService(page)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(articleList)
+	if err = json.NewEncoder(w).Encode(articleList); err != nil {
+		err = apperrors.ResBodyEncodeFailed.Wrap(err, "fail to encode response body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
 }
 
 // GET /article/{id} のハンドラ
 func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
-		http.Error(w, "Invalid query parameter", http.StatusBadRequest)
+		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
 	article, err := c.service.GetArticleService(articleID)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(article)
+	if err = json.NewEncoder(w).Encode(article); err != nil {
+		err = apperrors.ResBodyEncodeFailed.Wrap(err, "fail to encode response body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
 }
 
 // POST /article/nice のハンドラ
 func (c *ArticleController) PostNiceHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
-		http.Error(w, "fail to decode json\n", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
+		apperrors.ErrorHandler(w, req, err)
+		return
 	}
 
 	article, err := c.service.PostNiceService(reqArticle)
 	if err != nil {
-		http.Error(w, "fail internal exec\n", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, req, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(article)
+	if err = json.NewEncoder(w).Encode(article); err != nil {
+		err = apperrors.ResBodyEncodeFailed.Wrap(err, "fail to encode response body")
+		apperrors.ErrorHandler(w, req, err)
+		return
+	}
 }
