@@ -19,7 +19,6 @@ func NewCommentController(s services.CommentServicer) *CommentController {
 
 // POST /comment のハンドラ
 func (c *CommentController) PostCommentHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqComment models.Comment
 	if err := json.NewDecoder(req.Body).Decode(&reqComment); err != nil {
 		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
