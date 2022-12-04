@@ -59,7 +59,6 @@ func TestArticleDetailHandler(t *testing.T) {
 			if res.Code != tt.resultCode {
 				t.Errorf("unexpected StatusCode: want %d but %d\n", tt.resultCode, res.Code)
 			}
-
 		})
 	}
 }

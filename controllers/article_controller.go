@@ -22,13 +22,11 @@ func NewArticleController(s services.ArticleServicer) *ArticleController {
 
 // GET /hello のハンドラ
 func (c *ArticleController) HelloHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	io.WriteString(w, `{"message": "Hello, world!"}`)
 }
 
 // POST /article のハンドラ
 func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
@@ -51,7 +49,6 @@ func (c *ArticleController) PostArticleHandler(w http.ResponseWriter, req *http.
 
 // GET /article/list のハンドラ
 func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	queryMap := req.URL.Query()
 
 	// クエリパラメータpageを取得
@@ -83,7 +80,6 @@ func (c *ArticleController) ArticleListHandler(w http.ResponseWriter, req *http.
 
 // GET /article/{id} のハンドラ
 func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	articleID, err := strconv.Atoi(mux.Vars(req)["id"])
 	if err != nil {
 		err = apperrors.BadParam.Wrap(err, "pathparam must be number")
@@ -106,7 +102,6 @@ func (c *ArticleController) ArticleDetailHandler(w http.ResponseWriter, req *htt
 
 // POST /article/nice のハンドラ
 func (c *ArticleController) PostNiceHandler(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	var reqArticle models.Article
 	if err := json.NewDecoder(req.Body).Decode(&reqArticle); err != nil {
 		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "bad request body")
