@@ -3,6 +3,7 @@ package repositories_test
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"testing"
@@ -62,7 +63,12 @@ func setup() error {
 
 // 前テスト共通の後処理を書く
 func teardown() {
-	cleanupDB()
+	if err := cleanupDB(); err != nil {
+		log.Fatal("cleanup", err)
+	}
+	if err := setupTestData(); err != nil {
+		log.Fatal("setup")
+	}
 	testDB.Close()
 }
 
