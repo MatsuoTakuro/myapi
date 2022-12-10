@@ -3,7 +3,10 @@ package apperrors
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
+
+	"github.com/MatsuoTakuro/myapi-go-intermediate/api/middlewares"
 )
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
@@ -15,6 +18,10 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
 			Err:     err,
 		}
 	}
+
+	// TODO: fix it later. handlers should not depend on optional middlewares
+	traceID := middlewares.GetTracdID(r.Context())
+	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int
 

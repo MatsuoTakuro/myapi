@@ -28,6 +28,8 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 		rlw := NewResLoggingWriter(w)
 
+		ctx := SetTraceID(req.Context(), traceID)
+		req = req.WithContext(ctx)
 		next.ServeHTTP(rlw, req)
 
 		log.Printf("[%d]res: %d", traceID, rlw.code)
