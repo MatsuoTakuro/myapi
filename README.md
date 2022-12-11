@@ -5,3 +5,5 @@
     - <https://github.com/saki-engineering/go-intermediate>
 - 12章2節の自前でのIDトークン検証
   - [jwt-checker](https://github.com/MatsuoTakuro/jwt-checker)
+- 12章3節のgoogle公式パッケージでのIDトークン検証
+  - [myauth](https://github.com/MatsuoTakuro/myauth)
