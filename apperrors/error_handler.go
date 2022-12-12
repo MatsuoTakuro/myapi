@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/MatsuoTakuro/myapi-go-intermediate/api/middlewares"
+	"github.com/MatsuoTakuro/myapi-go-intermediate/api/contexts"
 )
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
@@ -19,8 +19,7 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
 		}
 	}
 
-	// TODO: fix it later. handlers should not depend on optional middlewares
-	traceID := middlewares.GetTracdID(r.Context())
+	traceID := contexts.GetTracdID(r.Context())
 	log.Printf("[%d]error: %s\n", traceID, appErr)
 
 	var statusCode int
@@ -30,6 +29,12 @@ func ErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
 		statusCode = http.StatusNotFound
 	case NoTargetData, ReqBodyDecodeFailed, BadParam:
 		statusCode = http.StatusBadRequest
+	case RequiredAuthHeader, Unauthorizated:
+		statusCode = http.StatusUnauthorized
+	case NotMatchUser:
+		statusCode = http.StatusForbidden
+	case CannotMakeValidator:
+		statusCode = http.StatusInternalServerError
 	case ResBodyEncodeFailed:
 		statusCode = http.StatusInternalServerError
 	default:

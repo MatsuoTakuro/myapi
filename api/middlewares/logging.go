@@ -3,6 +3,8 @@ package middlewares
 import (
 	"log"
 	"net/http"
+
+	"github.com/MatsuoTakuro/myapi-go-intermediate/api/contexts"
 )
 
 type resLoggingWriter struct {
@@ -21,14 +23,14 @@ func (rsw *resLoggingWriter) WriteHeader(code int) {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		traceID := newTraceID()
+		traceID := contexts.NewTraceID()
 
 		// リクエスト情報をロギング
 		log.Printf("[%d]%s %s\n", traceID, req.RequestURI, req.Method)
 
 		rlw := NewResLoggingWriter(w)
 
-		ctx := SetTraceID(req.Context(), traceID)
+		ctx := contexts.SetTraceID(req.Context(), traceID)
 		req = req.WithContext(ctx)
 		next.ServeHTTP(rlw, req)
 

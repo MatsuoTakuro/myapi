@@ -14,6 +14,11 @@ const (
 	ReqBodyDecodeFailed ErrCode = "CTL001"
 	BadParam            ErrCode = "CTL002"
 	ResBodyEncodeFailed ErrCode = "CTL003"
+
+	RequiredAuthHeader  ErrCode = "AUTH001"
+	CannotMakeValidator ErrCode = "AUTH002"
+	Unauthorizated      ErrCode = "AUTH003"
+	NotMatchUser        ErrCode = "AUTH004"
 )
 
 func (code ErrCode) Wrap(err error, message string) error {

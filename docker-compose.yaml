@@ -12,6 +12,8 @@ services:
       DB_USER: ${USERNAME}
       DB_PASSWORD: ${USERPASS}
       DB_NAME: ${DATABASE}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
     volumes:
       - .:/app
     ports:
